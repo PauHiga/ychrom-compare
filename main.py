@@ -13,36 +13,39 @@ def main():
   user_input = {}
 
   def get_results():
-    if len(docx_paths) > 0:
-      if os.path.exists(docx_paths[0]):
-        file_name, file_extension = os.path.splitext(docx_paths[0])
-        if file_extension != '.docx':
+    nonlocal docx_paths
+    if validate_user_input():
+      if len(docx_paths) > 0:
+        if os.path.exists(docx_paths[0]):
+          total_file_size = 0
+          for i in range(len(docx_paths)):
+            total_file_size = total_file_size + os.path.getsize(docx_paths[i])
+          if total_file_size > 200000:
+            big_file_answer = messagebox.askquestion("Warning", "This file is big and can take some time to be processed. \n\nContinue anyway?")
+            if big_file_answer == "no":
+              return
+            if big_file_answer == "yes":
+              text_display.delete('1.0', tk.END)
+              text_display.insert('1.0', "Please wait, the comparison is in progress...")
+              browse_button.config(state=tk.DISABLED)
+              erase_browse_button.config(state=tk.DISABLED)
+              results_button.config(state=tk.DISABLED)
+              window.update()
+          process_and_report()
+          erase_browse_button.config(state=tk.NORMAL)
+          browse_button.config(state=tk.NORMAL)
+          results_button.config(state=tk.NORMAL)
+          list_of_docs.config(text='')
+          docx_paths = []
+        else:
           text_display.delete('1.0', tk.END)
-          text_display.insert('1.0', "The file selected is not a .docx file! Please select a .docx file to compare")
-        file_size = os.path.getsize(docx_paths[0])
-        if file_size > 200000:
-          big_file_answer = messagebox.askquestion("Warning", "This file is big and can take some time to be processed. \n\nContinue anyway?")
-          if big_file_answer == "no":
-            return
-          if big_file_answer == "yes":
-            text_display.delete('1.0', tk.END)
-            text_display.insert('1.0', "Please wait, the comparison is in progress...")
-            browse_button.config(state=tk.DISABLED)
-            results_button.config(state=tk.DISABLED)
-            window.update()
-        get_user_values()
-        browse_button.config(state=tk.NORMAL)
-        results_button.config(state=tk.NORMAL)
-
+          text_display.insert('1.0', "Please select a .docx file to compare")
       else:
         text_display.delete('1.0', tk.END)
         text_display.insert('1.0', "Please select a .docx file to compare")
-    else:
-      text_display.delete('1.0', tk.END)
-      text_display.insert('1.0', "Please select a .docx file to compare")
 
 
-  def get_user_values():
+  def validate_user_input():
     for marker in markers:
       value = entry_fields[marker].get()
       if user_input_validation.validate(value):
@@ -52,22 +55,34 @@ def main():
         text_display.insert('1.0', '\n\n   Please complete the pattern to analyze.\n\n   The accepted inputs for each cell are:\n\n   -An integer number\n   -A decimal number \n   -Multiple numbers separated by slashes\n   -The expression "ND" (not determined).\n\n\n   Examples: \n   18 \n   9/10/11\n   17/18.2\n   ND')
         return
     user_input['MUESTRA'] = "user"
-    process_and_report()
+    return True
 
   def process_and_report():  
     text_display.tag_remove("center", "1.0", "end")
-    report = process_data.process(docx_paths[0], user_input)
+    report = process_data.process(docx_paths, user_input)
     final_report = prepare_display.process(report)
     text_display.delete('1.0', tk.END)
     text_display.insert('1.0', final_report)
 
   def browse():
     file_path = filedialog.askopenfilename()
-    if file_path not in docx_paths:
-      browse_input.delete(0, tk.END)
-      browse_input.insert(0, file_path)
-      docx_paths.insert(0, file_path)
-      list_of_docs.config(text='\n'.join(docx_paths))
+    text_display.delete('1.0', tk.END)
+    browse_input.delete(0, tk.END)
+    browse_input.insert(0, file_path)
+    if file_path.endswith(".docx"):
+      if file_path not in docx_paths:
+        docx_paths.insert(0, file_path)
+        list_of_docs.config(text='\n'.join(docx_paths))
+      else:
+        text_display.insert('1.0', "This file has already been added!")
+    else:
+      text_display.insert('1.0', "The file selected is not a .docx file! Please select a .docx file to compare")
+
+  def erase():
+    nonlocal docx_paths
+    list_of_docs.config(text='')
+    browse_input.delete(0, tk.END)
+    docx_paths = []
 
   window = Tk()
   window.geometry('720x730')
@@ -123,6 +138,9 @@ def main():
   browse_button = Button(browse_frame, text="Add new .docx file", command=browse)
   browse_button.config(state=tk.NORMAL)
   browse_button.grid(row = 0, column = 1)
+  erase_browse_button = Button(browse_frame, text="Erase list", command=erase)
+  erase_browse_button.config(state=tk.NORMAL)
+  erase_browse_button.grid(row = 0, column = 3)
 
   results_button = Button(third_box, text="Get results", font="Verdana", command=get_results)
   results_button.config(state=tk.NORMAL)
