@@ -63,9 +63,11 @@ def main():
 
   def browse():
     file_path = filedialog.askopenfilename()
-    browse_input.delete(0, tk.END)
-    browse_input.insert(0, file_path)
-    docx_paths.insert(0, file_path)
+    if file_path not in docx_paths:
+      browse_input.delete(0, tk.END)
+      browse_input.insert(0, file_path)
+      docx_paths.insert(0, file_path)
+      list_of_docs.config(text='\n'.join(docx_paths))
 
   window = Tk()
   window.geometry('720x730')
@@ -112,10 +114,13 @@ def main():
   browse_frame = Frame(second_box, bg=color2)
   browse_frame.pack(pady=10)
 
+  list_of_docs = Label(second_box, text='', bg=color2)
+  list_of_docs.pack(pady=5)
+
   browse_input = Entry(browse_frame, width=70)
   browse_input.grid(row = 0, column = 0, padx=(0, 10))
 
-  browse_button = Button(browse_frame, text="Browse", command=browse)
+  browse_button = Button(browse_frame, text="Add new .docx file", command=browse)
   browse_button.config(state=tk.NORMAL)
   browse_button.grid(row = 0, column = 1)
 
