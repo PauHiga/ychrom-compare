@@ -70,7 +70,32 @@ If there is no full match, an ND in any of the cells returns a ND match
 
 If none of those is true, there is a no coincidence.
 
----
+------------------------------------------------
+
+To use PyInstaller to create a standalone executable (.exe) of your Python project, you can follow these steps:
+
+Install PyInstaller:
+
+  pip install pyinstaller
+
+Open a command prompt or terminal and navigate to the directory where your Python script is located.
+
+Run the following command to create the executable:
+
+  pyinstaller --onefile your_script_name.py
+
+Replace your_script_name.py with the actual name of your Python script.
+
+The --onefile option specifies that you want to generate a single executable file. If you prefer a directory containing multiple files, you can omit this option.
+
+PyInstaller will analyze your script and its dependencies, and create the executable in the same directory. The output will be located in a subdirectory called dist.
+
+You can now find your standalone executable in the dist directory. This file can be distributed and run on compatible systems without requiring Python or any additional dependencies.
+
+It's important to note that PyInstaller may not handle certain complex scenarios or specific dependencies perfectly. In such cases, additional configuration might be necessary, such as including extra files or modifying the generated spec file. You can refer to the PyInstaller documentation for more advanced usage and troubleshooting: https://pyinstaller.readthedocs.io/
+
+Additionally, it's recommended to test the generated executable on the target system to ensure all functionality works as expected, especially if your script relies on external resources or libraries.
+
 
 ASCII art from https://www.asciiart.eu/
 
