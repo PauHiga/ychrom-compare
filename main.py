@@ -36,6 +36,7 @@ def main():
           browse_button.config(state=tk.NORMAL)
           results_button.config(state=tk.NORMAL)
           list_of_docs.config(text='')
+          browse_input.delete(0, tk.END)
           docx_paths = []
         else:
           text_display.delete('1.0', tk.END)
@@ -66,17 +67,18 @@ def main():
 
   def browse():
     file_path = filedialog.askopenfilename()
-    text_display.delete('1.0', tk.END)
     browse_input.delete(0, tk.END)
     browse_input.insert(0, file_path)
-    if file_path.endswith(".docx"):
-      if file_path not in docx_paths:
-        docx_paths.insert(0, file_path)
-        list_of_docs.config(text='\n'.join(docx_paths))
+    if file_path != '':
+      text_display.delete('1.0', tk.END)
+      if file_path.endswith(".docx"):
+        if file_path not in docx_paths:
+          docx_paths.insert(0, file_path)
+          list_of_docs.config(text='\n'.join(docx_paths))
+        else:
+          text_display.insert('1.0', "This file has already been added!")
       else:
-        text_display.insert('1.0', "This file has already been added!")
-    else:
-      text_display.insert('1.0', "The file selected is not a .docx file! Please select a .docx file to compare")
+        text_display.insert('1.0', "The file selected is not a .docx file! Please select a .docx file to compare")
 
   def erase():
     nonlocal docx_paths
@@ -86,6 +88,7 @@ def main():
 
   window = Tk()
   window.geometry('720x730')
+  window.title("YCHROM compare")
 
   color1 = '#E3F2FD'
   color2 = '#BBDEFB'
