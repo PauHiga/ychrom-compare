@@ -1,0 +1,24 @@
+# .gitignore
+
+# Compiled Python files
+*.pyc
+*.pyo
+__pycache__/
+
+# Compiled executables (created by PyInstaller)
+dist/
+
+# Build files and directories
+build/
+*.spec
+
+# Temporary files
+*.tmp
+
+# Logs
+*.log
+
+# Virtual environment (if you're using one)
+venv/
+
+YCHROM-compare_log.md
